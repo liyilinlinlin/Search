@@ -32,14 +32,19 @@ import jsonp from 'jsonp'
         methods:{
             // 按键获取下拉列表，
             get:function(event){
-                console.log(this.keyword)
                 if(event.keyCode == 38 || event.keyCode == 40){
                     return
+                }
+                if(this.keyword == ''){
+                    this.ishave = false
+                    this.myData = []
                 }
                 jsonp('https://sug.so.360.cn/suggest?word=' + this.keyword + '&encodein=utf-8&encodeout=utf-8',null,(err,data)=>{
                     if(data.s != null){
                         this.ishave = true
                         this.myData = data.s
+                    }else{
+                        this.ishave = false
                     }
                 })
             },
@@ -62,11 +67,9 @@ import jsonp from 'jsonp'
 
             // 清除文本框
             clearInput:function(){
-                console.log(this.keyword)
                 this.keyword = ''
                 this.myData = []
                 this.ishave = false
-                console.log(this.keyword)
             },
             search:function(){
                 window.open('https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=0&rsv_idx=1&tn=baidu&wd='+this.keyword)
