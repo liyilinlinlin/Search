@@ -4,13 +4,13 @@
             <img src="./../assets/baidu_logo.png" alt="">
         </div>
         <div class="search-input">
-            <input type="text" v-model="keyword" @keyup="get($event)">
+            <input type="text" v-model="keyword" @keyup="get($event)" @keydown.enter="search()" @keydown.down='selectdown()' @keydown.up='selectup()'>
             <span class="search-reset" @click="clearInput()">&times;</span>
             <button class="search-btn" @click="search()">百度一下</button>
             <!-- 显示下拉数据 -->
             <div class="search-select">
                 <transition-group name="itenfade" tag="ul" :class="{haveUl:ishave}">
-                    <li class="select-option select-list" :class="{selectback:index==now}" v-for="(value,index) in myData" :key="index">
+                    <li class="select-option select-list" :class="{selectback:index==now}" v-for="(value,index) in myData" :key="index" @mouseover="selectHover(index)" @click="selectClick(index)">
                         {{value}}
                     </li>
                 </transition-group>
@@ -30,23 +30,35 @@ import jsonp from 'jsonp'
             }
         },
         methods:{
+            // 按键获取下拉列表，
             get:function(event){
                 console.log(this.keyword)
                 if(event.keyCode == 38 || event.keyCode == 40){
                     return
                 }
                 jsonp('https://sug.so.360.cn/suggest?word=' + this.keyword + '&encodein=utf-8&encodeout=utf-8',null,(err,data)=>{
-                    // console.log(data)
-                    // console.log("1111"+data.s)
-                    this.myData = data.s
                     if(data.s != null){
                         this.ishave = true
+                        this.myData = data.s
                     }
-                    // console.log(this.myData)
                 })
             },
-
-
+            //按 下键
+            selectdown:function(){
+                this.now++
+                if(this.now == this.myData.length){
+                    this.now = 0
+                }
+                this.keyword = this.myData[this.now]
+            },
+            // 按 上键
+            selectup:function(){
+                if(this.now <= 0){
+                    this.now = this.myData.length
+                }
+                this.now--
+                this.keyword = this.myData[this.now]
+            },
 
             // 清除文本框
             clearInput:function(){
@@ -58,6 +70,13 @@ import jsonp from 'jsonp'
             },
             search:function(){
                 window.open('https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=0&rsv_idx=1&tn=baidu&wd='+this.keyword)
+            },
+            selectHover(index){
+                this.now = index
+            },
+            selectClick(index){
+                this.keyword = this.myData[index]
+                this.search()
             }
         }
     }
