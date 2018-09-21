@@ -6,6 +6,9 @@
 需安装node和git
 
 git clone https://github.com/liyilinlinlin/Search.git
+
 cd Search
+
 npm install
+
 npm run dev
